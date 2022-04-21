@@ -30,5 +30,5 @@ Install banner-app with npm
 Zarko Petrov - [https://github.com/Zaryooo](https://github.com/Zaryooo)
 ## License
 
-Distributed under the XYZ license. See LICENSE for more information.
+Distributed under the MIT license. See LICENSE for more information.
 
