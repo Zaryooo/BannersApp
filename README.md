@@ -10,21 +10,42 @@ Creating banners with title and image. The user account includes Registation and
 
 ![](./demo/banner-app-gif.gif)
 
+## Documentation
 
-## Installation
+- [Material UI](https://mui.com/)
+- [Mongo DB](https://www.mongodb.com/)
+- [Nodemon](https://www.npmjs.com/package/nodemon)
 
-Install banner-app with npm
+## Installation App
+
+Install bannersapp with npm
 
 ```bash
-  npm install banner-app
-  cd banner-app
+  npm install
 ```
     
 ## Development
 
 ```bash
+  cd app
   npm start
 ```
+
+## Installation Server
+
+Install server with npm
+
+```bash
+  npm install --save-dev nodemon
+```
+    
+## Usage
+
+```bash
+  cd server
+  nodemon
+```
+
 ## Meta
 
 Zarko Petrov - [https://github.com/Zaryooo](https://github.com/Zaryooo)
