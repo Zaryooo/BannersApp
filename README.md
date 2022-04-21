@@ -8,7 +8,7 @@ Creating banners with title and image. The user account includes Registation and
 
 ## Demo
 
-![](./demo/banner-app-demo.gif)
+![](./demo/banner-app-gif.gif)
 
 
 ## Installation
