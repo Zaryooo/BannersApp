@@ -1,0 +1,38 @@
+.grid {
+    padding: 20px 0;
+}
+
+.card  {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.media {
+    padding-top: 56.25%;
+}
+
+.bar {
+    
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: rgba(0,0,0,0.1);
+}
+
+.content {
+    flex-grow: 1;
+    color: #fff;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+
+@media (min-width: 600px) {
+    .bar {
+        position: absolute;
+        bottom: 0;
+    }
+
+}
+
