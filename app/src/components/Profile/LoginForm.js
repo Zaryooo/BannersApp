@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../../store/auth-context';
 import { Box, TextField, Button } from '@mui/material';
+import axios from 'axios';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -17,43 +18,44 @@ const LoginForm = () => {
   const onEmailHandler = (e) => {
     setEmail(e.target.value);
     setEmailError(false);
-  }
+  };
 
   const onPasswordHandler = (e) => {
     setPassword(e.target.value);
     setPasswordError(false);
-  }
+  };
 
   const onChangeHandler = (e) => {
     setResponseError(false);
-  }
+  };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    if(email === '') {
+    if (email === '') {
       setEmailError(true);
       return;
     }
-    if(password === '') {
+    if (password === '') {
       setPasswordError(true);
       return;
     }
 
-    const response = await fetch('http://localhost:5000/api/login', {
+    const response = await axios({
       method: 'POST',
+      url: 'http://localhost:5000/api/login',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      data: JSON.stringify({
         email,
         password,
       }),
-    });
+    })
+      .then((response) => response)
+      .catch((error) => console.log(error));
 
-    const data = await response.json();
-
-    const { status, token, time, name } = data;
+    const { status, token, time, name } = response.data;
 
     if (status === 'ok') {
       const expirationTime = new Date(new Date().getTime() + +time * 1000);
@@ -65,7 +67,13 @@ const LoginForm = () => {
   };
 
   return (
-    <Box component="form" noValidate onChange={onChangeHandler} onSubmit={onSubmitHandler} sx={{ mt: 1 }}>
+    <Box
+      component="form"
+      noValidate
+      onChange={onChangeHandler}
+      onSubmit={onSubmitHandler}
+      sx={{ mt: 1 }}
+    >
       <TextField
         margin="normal"
         required
@@ -76,7 +84,10 @@ const LoginForm = () => {
         autoComplete="email"
         onChange={onEmailHandler}
         error={emailError || responseError}
-        helperText={(emailError && 'Please specify your email') || (responseError && 'Please check your email')}
+        helperText={
+          (emailError && 'Please specify your email') ||
+          (responseError && 'Please check your email')
+        }
       />
       <TextField
         margin="normal"
@@ -89,7 +100,10 @@ const LoginForm = () => {
         autoComplete="current-password"
         onChange={onPasswordHandler}
         error={passwordError || responseError}
-        helperText={(passwordError && 'Please specify your password') || (responseError && 'Please type correct password')}
+        helperText={
+          (passwordError && 'Please specify your password') ||
+          (responseError && 'Please type correct password')
+        }
       />
 
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 3 }}>

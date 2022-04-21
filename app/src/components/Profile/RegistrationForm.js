@@ -1,6 +1,7 @@
 import React, { useState, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Button } from '@mui/material';
+import axios from 'axios';
 
 const nameReducer = (state, action) => {
   if (action.type === 'USER_INPUT') {
@@ -103,36 +104,36 @@ const RegistrationForm = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    if(nameIsValid) {
+    if (nameIsValid) {
       dispatchName({ type: 'USER_BLUR' });
     }
-    if(emailIsValid) {
+    if (emailIsValid) {
       dispatchEmail({ type: 'USER_BLUR' });
     }
-    if(passwordIsValid) {
+    if (passwordIsValid) {
       dispatchPassword({ type: 'USER_BLUR' });
     }
 
-    const response = await fetch('http://localhost:5000/api/registration', {
+    const response = await axios({
       method: 'POST',
+      url: 'http://localhost:5000/api/registration',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      data: JSON.stringify({
         name: nameState.value,
         email: emailState.value,
-        password: passwordState.value
+        password: passwordState.value,
       }),
-    });
+    })
+      .then((response) => response)
+      .catch((error) => error);
 
-    const data = await response.json();
-
-    if (data.error) {
+    if (response.data.error) {
       setFormValid(false);
       return;
     }
     navigate('/login', { replace: true });
-
   };
 
   return (
@@ -157,7 +158,10 @@ const RegistrationForm = () => {
         onBlur={emailBlurHandler}
         onChange={emailChangeHandler}
         error={!emailIsValid || !formValid}
-        helperText={(!emailIsValid && 'Please specify valid email') || (!formValid && 'This email is already registered!')}
+        helperText={
+          (!emailIsValid && 'Please specify valid email') ||
+          (!formValid && 'This email is already registered!')
+        }
       />
       <TextField
         margin="normal"
@@ -169,7 +173,9 @@ const RegistrationForm = () => {
         onBlur={passwordBlurHandler}
         onChange={passwordChangeHandler}
         error={!passwordIsValid}
-        helperText={!passwordIsValid && 'Please specify password more than 8 digits'}
+        helperText={
+          !passwordIsValid && 'Please specify password more than 8 digits'
+        }
       />
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 3 }}>
         Submit

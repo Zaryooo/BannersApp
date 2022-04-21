@@ -1,13 +1,14 @@
-const { urlencoded } = require('express');
 const express = require('express');
 const app = express();
-const cors = require('cors');
-const mongoose = require('mongoose');
-const User = require('./models/user.model');
 const router = express.Router();
+
+const cors = require('cors');
+const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const multer = require('multer');
+
+const mongoose = require('mongoose');
+const User = require('./models/user.model');
 
 const secureToken = 'secret123'; // Have to be much secure
 
@@ -38,8 +39,8 @@ const upload = multer({
 
 app.use(cors());
 app.use(router);
-app.use('/uploads/', express.static('uploads'));
 app.use(express.json());
+app.use('/uploads/', express.static('uploads'));
 
 mongoose.connect('mongodb://localhost:27017/banner-app');
 
@@ -51,7 +52,7 @@ app.post('/api/registration', async (req, res) => {
       password: req.body.password,
     });
     res.json({ status: 'ok' });
-  } catch (err) {
+  } catch (error) {
     res.json({ status: 'error', error: 'Duplicated email!' });
   }
 });
