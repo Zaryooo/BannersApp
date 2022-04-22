@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BannerForm from './BannerForm';
+import LoadingSpinner from '../UI/LoadingSpinner';
 import {
   Button,
   Box,
@@ -18,21 +19,33 @@ import axios from 'axios';
 import classes from './Banners.module.css';
 
 const Banners = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [emptyBanners, setEmptyBanners] = useState(false);
+
   const [banners, setBanners] = useState([]);
   const [addBanner, setAddBanner] = useState(false);
   const [editBanner, setEditBanner] = useState({});
 
   const loadBanners = async () => {
+    setIsLoading(true);
     const response = await axios({
       url: 'http://localhost:5000/api/banners',
       headers: {
         'x-access-token': localStorage.getItem('token'),
       },
-    }).then(response => response).catch(error => console.log(error));
+    })
+      .then((response) => response)
+      .catch((error) => console.log(error));
 
     if (response.data.status === 'ok') {
-      setBanners(response.data.banners);
+      if (response.data.banners) {
+        setBanners(response.data.banners);
+        if(response.data.banners.length === 0) {
+          setEmptyBanners(true);
+        }
+      }
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -40,6 +53,7 @@ const Banners = () => {
   }, []);
 
   const onDeleteHandler = (bannerId) => {
+    setIsLoading(true);
     axios({
       method: 'POST',
       url: 'http://localhost:5000/api/delete',
@@ -61,11 +75,13 @@ const Banners = () => {
       .catch((error) => {
         console.error('Error', error);
       });
+    setIsLoading(false);
   };
 
   const onAddHandler = () => {
     loadBanners();
-  }
+    setEmptyBanners(false);
+  };
 
   const onEditHandler = (item) => {
     setEditBanner(item);
@@ -76,10 +92,11 @@ const Banners = () => {
     setAddBanner(false);
     setEditBanner({});
   };
-  
+
   return (
     <Box>
-      {banners.length === 0  && (
+      {isLoading && <LoadingSpinner />}
+      {emptyBanners && !addBanner && (
         <Typography component="p" variant="h6" align="center">
           No banners
         </Typography>
@@ -132,7 +149,11 @@ const Banners = () => {
           );
         })}
         {addBanner && (
-          <BannerForm onAdd={onAddHandler} onCancel={onCancelHandler} onEdit={editBanner}/>
+          <BannerForm
+            onAdd={onAddHandler}
+            onCancel={onCancelHandler}
+            onEdit={editBanner}
+          />
         )}
       </Grid>
       {!addBanner && (
