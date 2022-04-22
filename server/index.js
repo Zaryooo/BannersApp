@@ -25,7 +25,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true);
   } else {
-    cb(null, false);
+    cb(new Error('Only image or png'), false);
   }
 };
 
@@ -104,13 +104,13 @@ app.get('/api/banners', async (req, res) => {
 
 router.post('/api/banners', upload.single('upload_image'), async (req, res) => {
   const token = req.headers['x-access-token'];
-  const title = req.body.title;
-  const image = req.file.filename;
 
   try {
     const decoded = jwt.verify(token, secureToken);
     const email = decoded.email;
     const id = uuidv4();
+    const title = req.body.title;
+    const image = req.file.filename;
     const banner = {
       id,
       title,

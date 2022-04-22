@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Box,
@@ -16,22 +16,31 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import axios from 'axios';
 
 const BannerForm = (props) => {
+  const Input = styled('input')({
+    display: 'none',
+  });
 
   const [file, setFile] = useState('');
   const [fileError, setFileError] = useState(false);
-  const [fileSize, setFileSize] = useState(false);
   const [fileIsEmpty, setFileIsEmpty] = useState(false);
 
   const [title, setTitle] = useState('');
   const [titleError, setTitleError] = useState(false);
 
-  const [item, setItem] = useState(props.onEdit);
   const [edit, setEdit] = useState(false);
-  const [editId, setEditId] = useState(null);
 
-  const Input = styled('input')({
-    display: 'none',
-  });
+  const item = props.onEdit;
+  useEffect(() => {
+    if (item.id) {
+      setTitle(item.title);
+      setFile(item.image);
+      setEdit(true);
+    } else {
+      setTitle('');
+      setFile('');
+      setEdit(false);
+    }
+  }, [item]);
 
   const onTitleChange = (e) => {
     setTitle(e.target.value);
@@ -45,7 +54,13 @@ const BannerForm = (props) => {
       return;
     }
     if (e.target.files[0].size > 1024 * 1024 * 3) {
-      setFileSize(true);
+      setFileError(true);
+      setFile('');
+      return;
+    }
+    console.log(e.target.files[0].type);
+    if(e.target.files[0].type !== 'image/jpeg' && e.target.files[0].type !== 'image/png') {
+      setFileError(true);
       setFile('');
       return;
     }
@@ -69,7 +84,7 @@ const BannerForm = (props) => {
     let url = 'http://localhost:5000/api/banners';
     if (edit) {
       url = 'http://localhost:5000/api/update';
-      formData.append('bannerId', editId);
+      formData.append('bannerId', item.id);
     }
 
     formData.append('upload_image', file);
@@ -98,17 +113,6 @@ const BannerForm = (props) => {
         console.error('Error', error);
       });
   };
-
-
-  const onEditHandler = (item) => {
-    setTitle(item.title);
-    setEditId(item.id);
-    setEdit(true);
-  };
-
-  if(item !== '') {
-    onEditHandler(item);
-  }
 
   const onCancelHandler = () => {
     setTitle('');
@@ -169,38 +173,29 @@ const BannerForm = (props) => {
                 Please select image!
               </Alert>
             )}
+            
             {fileError && (
               <Alert
                 onClose={() => setFileError(false)}
                 variant="outlined"
                 severity="error"
               >
-                Two many images!
-              </Alert>
-            )}
-            {fileSize && (
-              <Alert
-                onClose={() => setFileSize(false)}
-                variant="outlined"
-                severity="error"
-              >
-                Only jpg/png up to 3 MB!
+                Only 1 image jpg/png up to 3 MB!
               </Alert>
             )}
           </label>
 
-          <CardActions sx={{ mt: 2, px: 0, justifyContent: 'center' }}>
+          <CardActions sx={{ mt: 1, px: 0, justifyContent: 'center' }}>
             <Button
               type="submit"
               size="large"
               color="primary"
               variant="contained"
-              sx={{ mb: 1 }}
             >
               {!edit && 'Add'}
               {edit && 'Edit'}
             </Button>
-            <Button size="medium" color="primary" onClick={onCancelHandler}>
+            <Button size="medium" color="primary" sx={{ my: 1 }} onClick={onCancelHandler}>
               Cancel
             </Button>
           </CardActions>

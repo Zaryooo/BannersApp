@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import BannerForm from './BannerForm';
 import {
   Button,
   Box,
@@ -8,7 +9,6 @@ import {
   CardContent,
   CardActions,
   Typography,
-  styled,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -16,12 +16,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 
 import classes from './Banners.module.css';
-import BannerForm from './BannerForm';
 
-const Banners = (props) => {
-  const [addBanner, setAddBanner] = useState(false);
+const Banners = () => {
   const [banners, setBanners] = useState([]);
-  const [edit, setEdit] = useState(false);
+  const [addBanner, setAddBanner] = useState(false);
+  const [editBanner, setEditBanner] = useState({});
 
   const loadBanners = async () => {
     const response = await axios({
@@ -64,18 +63,23 @@ const Banners = (props) => {
       });
   };
 
+  const onAddHandler = () => {
+    loadBanners();
+  }
+
   const onEditHandler = (item) => {
+    setEditBanner(item);
     setAddBanner(true);
-    setEdit(item);
   };
 
   const onCancelHandler = () => {
     setAddBanner(false);
+    setEditBanner({});
   };
-
+  
   return (
     <Box>
-      {banners == '' && (
+      {banners.length === 0  && (
         <Typography component="p" variant="h6" align="center">
           No banners
         </Typography>
@@ -128,7 +132,7 @@ const Banners = (props) => {
           );
         })}
         {addBanner && (
-          <BannerForm onAdd={loadBanners} onCancel={onCancelHandler} onEdit={edit}/>
+          <BannerForm onAdd={onAddHandler} onCancel={onCancelHandler} onEdit={editBanner}/>
         )}
       </Grid>
       {!addBanner && (
